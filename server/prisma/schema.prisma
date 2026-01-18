@@ -24,6 +24,7 @@ model Asset {
   category      String
   status        String        @default("available") // available, borrowed, maintenance
   imagePath     String?       // Changed from imageUrl to imagePath to match prompt
+  description   String?       // <--- ADDED: Description field
   transactions  Transaction[]
   createdAt     DateTime      @default(now())
 }

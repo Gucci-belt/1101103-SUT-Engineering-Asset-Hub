@@ -7,7 +7,9 @@ import {
 } from 'lucide-react';
 
 // --- API Helper ---
-const API_URL = 'http://localhost:3000/api';
+// Dynamically determine API URL based on current hostname to support mobile/PWA testing
+// If on localhost, uses localhost:3000. If on 192.168.x.x, uses 192.168.x.x:3000
+const API_URL = `http://${window.location.hostname}:3000/api`;
 
 const App = () => {
   // --- Global State ---
@@ -62,7 +64,7 @@ const App = () => {
       // Adjusting image path to full URL
       const mapped = data.map(a => ({
         ...a,
-        image: a.imagePath ? `http://localhost:3000${a.imagePath}` : 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b'
+        image: a.imagePath ? (a.imagePath.startsWith('http') ? a.imagePath : `${API_URL.replace('/api', '')}${a.imagePath}`) : 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b'
       }));
       setAssets(mapped);
     } catch (err) { console.error("Error fetching assets:", err); }
@@ -309,10 +311,15 @@ const StudentDashboard = ({ assets, refreshAssets, studentId, userId }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedAsset, setSelectedAsset] = useState(null);
+  const [detailAsset, setDetailAsset] = useState(null); // For Viewing Details <--- ADDED
   const [isBorrowModalOpen, setIsBorrowModalOpen] = useState(false);
   const [history, setHistory] = useState([]);
 
   const categories = ['All', 'IoT', 'Laptop', 'Network', 'Accessories'];
+
+  const handleAssetClick = (asset) => {
+    setDetailAsset(asset);
+  };
 
   useEffect(() => {
     if (activeTab === 'history' && userId) {
@@ -417,7 +424,12 @@ const StudentDashboard = ({ assets, refreshAssets, studentId, userId }) => {
           {/* Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredAssets.map(asset => (
-              <AssetCard key={asset.id} asset={asset} onBorrow={() => handleBorrowClick(asset)} />
+              <AssetCard
+                key={asset.id}
+                asset={asset}
+                onBorrow={() => handleBorrowClick(asset)}
+                onClick={() => handleAssetClick(asset)}
+              />
             ))}
           </div>
         </div>
@@ -477,14 +489,26 @@ const StudentDashboard = ({ assets, refreshAssets, studentId, userId }) => {
       {isBorrowModalOpen && selectedAsset && (
         <BorrowModal asset={selectedAsset} onClose={() => setIsBorrowModalOpen(false)} onSuccess={() => { refreshAssets(); setActiveTab('history'); }} currentUserId={userId} />
       )}
+
+      {/* Asset Detail Modal */}
+      {detailAsset && (
+        <AssetDetailModal
+          asset={detailAsset}
+          onClose={() => setDetailAsset(null)}
+          onBorrow={() => {
+            setDetailAsset(null);
+            handleBorrowClick(detailAsset);
+          }}
+        />
+      )}
     </>
   );
 };
 
-const AssetCard = ({ asset, onBorrow }) => {
+const AssetCard = ({ asset, onBorrow, onClick }) => {
   const isAvailable = asset.status === 'available';
   return (
-    <div className="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-orange-100/50 transition-all overflow-hidden flex flex-col">
+    <div onClick={onClick} className="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-orange-100/50 transition-all overflow-hidden flex flex-col cursor-pointer">
       <div className="relative h-56 bg-slate-100">
         <img src={asset.image} alt={asset.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
         <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full text-[10px] font-bold uppercase flex items-center gap-1.5">
@@ -494,7 +518,7 @@ const AssetCard = ({ asset, onBorrow }) => {
       </div>
       <div className="p-6 relative">
         <div className="absolute -top-6 right-6">
-          <button onClick={onBorrow} disabled={!isAvailable}
+          <button onClick={(e) => { e.stopPropagation(); onBorrow(); }} disabled={!isAvailable}
             className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 ${isAvailable ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-300'}`}>
             <Package size={20} />
           </button>
@@ -857,6 +881,50 @@ const RequestRow = ({ request, onUpdate, type }) => {
   );
 };
 
+// --- Modal for Asset Details ---
+const AssetDetailModal = ({ asset, onClose, onBorrow }) => {
+  if (!asset) return null;
+  return (
+    <CustomModal title="Asset Details" onClose={onClose}>
+      <div className="space-y-6">
+        <div className="relative h-64 w-full bg-slate-100 rounded-2xl overflow-hidden border border-slate-200">
+          <img src={asset.image} className="w-full h-full object-cover" alt={asset.name} />
+          <span className={`absolute top-4 right-4 px-3 py-1.5 rounded-full text-xs font-bold uppercase text-white shadow-sm ${asset.status === 'available' ? 'bg-emerald-500' : 'bg-rose-500'}`}>
+            {asset.status}
+          </span>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800">{asset.name}</h2>
+            <div className="flex items-center gap-3 mt-2">
+              <span className="px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-wider border border-slate-200">{asset.category}</span>
+              <span className="text-slate-400 text-sm font-mono flex items-center gap-1"><Cpu size={14} /> {asset.serialNumber}</span>
+            </div>
+          </div>
+
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <h4 className="text-sm font-bold text-slate-700 mb-2 flex items-center gap-2"><FileText size={16} /> Description</h4>
+            <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">
+              {asset.description || "No description provided."}
+            </p>
+          </div>
+
+          {asset.status === 'available' ? (
+            <button onClick={onBorrow} className="w-full py-3.5 bg-orange-500 text-white rounded-xl font-bold shadow-lg shadow-orange-500/20 hover:bg-orange-600 hover:shadow-orange-500/40 transition-all flex items-center justify-center gap-2">
+              <Package size={20} /> Borrow This Item
+            </button>
+          ) : (
+            <div className="w-full py-3.5 bg-slate-100 text-slate-400 rounded-xl font-bold flex items-center justify-center gap-2 cursor-not-allowed">
+              <XCircle size={20} /> Currently Unavailable
+            </div>
+          )}
+        </div>
+      </div>
+    </CustomModal>
+  );
+};
+
 const ManageAssetModal = ({ asset, onClose, onSuccess }) => {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(asset?.imagePath ? (asset.imagePath.startsWith('http') ? asset.imagePath : `http://localhost:3000${asset.imagePath}`) : null);
@@ -880,6 +948,7 @@ const ManageAssetModal = ({ asset, onClose, onSuccess }) => {
     apiFormData.append('serialNumber', formData.get('serialNumber'));
     apiFormData.append('category', formData.get('category'));
     apiFormData.append('status', isEdit ? asset.status : 'available');
+    apiFormData.append('description', formData.get('description')); // <--- Added
 
     const imageFile = formData.get('imageFile');
     if (imageFile && imageFile.size > 0) {
@@ -918,6 +987,12 @@ const ManageAssetModal = ({ asset, onClose, onSuccess }) => {
         <div>
           <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Asset Name</label>
           <input name="name" defaultValue={asset?.name} required className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-orange-500/20 transition-all font-medium" placeholder="Ex. MacBook Pro M1" />
+        </div>
+
+        {/* Added Description Field */}
+        <div>
+          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
+          <textarea name="description" defaultValue={asset?.description} rows="3" className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-orange-500/20 transition-all font-medium" placeholder="Enter detailed description here..."></textarea>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>

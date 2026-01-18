@@ -12,7 +12,7 @@ exports.getAllAssets = async (req, res) => {
 
 // POST /api/assets
 exports.createAsset = async (req, res) => {
-    const { name, serialNumber, category, status } = req.body;
+    const { name, serialNumber, category, status, description } = req.body;
     let imagePath = req.body.imagePath; // Default to body (if text-only update)
 
     if (req.file) {
@@ -21,10 +21,13 @@ exports.createAsset = async (req, res) => {
 
     try {
         const newAsset = await prisma.asset.create({
-            data: { name, serialNumber, category, status: status || 'available', imagePath }
+            data: { name, serialNumber, category, status: status || 'available', imagePath, description }
         });
         res.json(newAsset);
     } catch (err) {
+        if (err.code === 'P2002') {
+            return res.status(400).json({ error: 'Serial Number already exists. Please use a unique serial number.' });
+        }
         res.status(500).json({ error: err.message });
     }
 };
@@ -32,7 +35,7 @@ exports.createAsset = async (req, res) => {
 // PUT /api/assets/:id
 exports.updateAsset = async (req, res) => {
     const { id } = req.params;
-    const { name, serialNumber, category, status } = req.body;
+    const { name, serialNumber, category, status, description } = req.body;
     let imagePath = req.body.imagePath;
 
     if (req.file) {
@@ -47,7 +50,8 @@ exports.updateAsset = async (req, res) => {
                 serialNumber,
                 category,
                 status,
-                imagePath
+                imagePath,
+                description
             }
         });
         res.json(updatedAsset);
