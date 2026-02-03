@@ -8,6 +8,8 @@ RUN npm install --production
 
 COPY . .
 
+RUN chmod +x node_modules/.bin/prisma
+
 # Generate Prisma Client
 RUN npx prisma generate
 
