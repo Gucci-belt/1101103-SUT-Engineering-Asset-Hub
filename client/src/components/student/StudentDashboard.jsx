@@ -78,7 +78,7 @@ const StudentDashboard = ({ assets, refreshAssets, studentId, userId }) => {
                             <h1 className="text-3xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
                                 ระบบจองและติดตาม<br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-500">
-                                    สถานะอุปกรณ์ห้องปฏิบัติการหน้าหี
+                                    สถานะอุปกรณ์ห้องปฏิบัติการ
                                 </span>
                             </h1>
                             <p className="text-slate-600 text-lg">Computer Engineering Lab Asset Management System</p>
