@@ -15,6 +15,9 @@ pipeline {
                     sh """
                         cd ${PROJECT_DIR}
                         
+                        echo "Configuring safe directory..."
+                        git config --global --add safe.directory ${PROJECT_DIR}
+                        
                         echo "Fetching latest changes..."
                         git fetch --all
                         git reset --hard origin/main
