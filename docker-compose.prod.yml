@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  server:
+    build: ./server
+    container_name: it-assets-server
+    restart: always
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgresql://user:password@db:5432/it_assets?schema=public
+      - JWT_SECRET=supersecretkey
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./server/uploads:/app/uploads
+
+  client:
+    build: ./client
+    container_name: it-assets-client
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
+  db:
+    image: postgres:15-alpine
+    container_name: it-assets-db
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=it_assets
+    volumes:
+      - pgdata-prod:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata-prod:
