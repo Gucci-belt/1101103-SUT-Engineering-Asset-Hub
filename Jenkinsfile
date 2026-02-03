@@ -6,6 +6,11 @@ pipeline {
         PROJECT_DIR = '/home/b6701970/1101103-SUT-Engineering-Asset-Hub'
     }
 
+    triggers {
+        // Check for Git changes every 1 minute
+        pollSCM '* * * * *'
+    }
+
     stages {
         stage('Deploy') {
             steps {
