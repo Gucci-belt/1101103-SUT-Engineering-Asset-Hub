@@ -14,6 +14,18 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// --- Prometheus Metrics ---
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ register: client.register });
+
+app.get('/metrics', async (req, res) => {
+    res.setHeader('Content-Type', client.register.contentType);
+    const metrics = await client.register.metrics();
+    res.send(metrics);
+});
+
+
 // --- Routes ---
 const transactionRoutes = require('./routes/transactionRoutes');
 
