@@ -29,7 +29,7 @@ pipeline {
                         
                         echo "Deploying with Docker Compose..."
                         # Ensure we use the production compose file
-                        docker compose -f docker-compose.prod.yml up -d --build client server
+                        docker compose -f docker-compose.prod.yml up -d --build
                         
                         echo "Cleaning up..."
                         docker image prune -f
