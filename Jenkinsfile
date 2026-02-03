@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        // Change this path to your actual project path on the server
+        PROJECT_DIR = '/home/b6701970/1101103-SUT-Engineering-Asset-Hub'
+    }
+
+    stages {
+        stage('Deploy') {
+            steps {
+                script {
+                    // We use 'sh' to run commands on the server directly
+                    // accessing the existing directory to preserve Certbot certificates and DB volumes
+                    sh """
+                        cd ${PROJECT_DIR}
+                        
+                        echo "Fetching latest changes..."
+                        git fetch --all
+                        git reset --hard origin/main
+                        
+                        echo "Deploying with Docker Compose..."
+                        # Ensure we use the production compose file
+                        docker compose -f docker-compose.prod.yml up -d --build client server
+                        
+                        echo "Cleaning up..."
+                        docker image prune -f
+                    """
+                }
+            }
+        }
+    }
+}
