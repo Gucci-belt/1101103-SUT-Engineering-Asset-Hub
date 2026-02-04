@@ -72,6 +72,14 @@ services:
     depends_on:
       - prometheus
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
 volumes:
   pgdata-prod:
   grafana-data:
