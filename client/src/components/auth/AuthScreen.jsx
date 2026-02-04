@@ -121,19 +121,6 @@ const AuthScreen = ({ onLogin }) => {
                             </div>
                         )}
 
-                        {isRegister && (
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Role</label>
-                                <select
-                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-orange-500/20 outline-none"
-                                    value={formData.role}
-                                    onChange={e => setFormData({ ...formData, role: e.target.value })}
-                                >
-                                    <option value="student">Student</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                        )}
 
                         <button type="submit" className="w-full py-3.5 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-xl font-bold shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
                             {isReset ? 'Reset Password' : (isRegister ? 'Sign Up' : 'Login')} <ArrowRight size={18} />

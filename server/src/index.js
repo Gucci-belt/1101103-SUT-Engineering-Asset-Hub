@@ -66,7 +66,8 @@ app.post('/api/auth/register', async (req, res) => {
             data: {
                 studentId,
                 passwordHash: hashedPassword,
-                role: role || 'student',
+                passwordHash: hashedPassword,
+                role: 'student', // FORCE STUDENT ROLE: Prevent creating new admins via API
                 pin: pin || '1234' // Default PIN if not provided (for simplicity)
             }
         });
