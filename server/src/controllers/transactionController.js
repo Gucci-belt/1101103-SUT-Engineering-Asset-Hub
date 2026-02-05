@@ -146,18 +146,15 @@ exports.returnTransaction = async (req, res) => {
 
 // GET /api/transactions/my-history
 exports.getMyHistory = async (req, res) => {
-    const userId = req.query.userId;
-
-    if (!userId) {
-        return res.status(400).json({ error: "User ID is required" });
-    }
+    // FIX IDOR: Use ID from Token (req.user.id) instead of Query Param
+    const userId = req.user.id;
 
     try {
         const transactions = await prisma.transaction.findMany({
             where: { userId: Number(userId) },
             include: { asset: true },
             orderBy: [
-                { status: 'asc' }, // Pending/Approved first (alphabetical order check might be needed if strictly per request)
+                { status: 'asc' },
                 { borrowDate: 'desc' }
             ]
         });
