@@ -27,7 +27,7 @@ const Navbar = ({ viewMode, setViewMode, user, onLogout }) => (
                     )}
 
                     <div className="flex flex-col items-end mr-2">
-                        <span className="text-sm font-semibold text-slate-700">{user.role === 'admin' ? 'Admin User' : 'Student User'}</span>
+                        <span className="text-sm font-semibold text-slate-700 hidden sm:inline">{user.role === 'admin' ? 'Admin User' : 'Student User'}</span>
                         <span className="text-xs text-orange-600 font-medium bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">
                             {user.studentId}
                         </span>

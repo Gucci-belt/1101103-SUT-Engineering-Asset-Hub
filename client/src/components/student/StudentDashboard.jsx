@@ -84,7 +84,7 @@ const StudentDashboard = ({ assets, refreshAssets, studentId, userId }) => {
                             <p className="text-slate-600 text-lg">Computer Engineering Lab Asset Management System</p>
                         </div>
 
-                        <div className="flex bg-white/60 p-1.5 rounded-2xl border border-slate-200 backdrop-blur-sm">
+                        <div className="flex flex-wrap justify-center bg-white/60 p-1.5 rounded-2xl border border-slate-200 backdrop-blur-sm">
                             <button
                                 onClick={() => setActiveTab('browse')}
                                 className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${activeTab === 'browse' ? 'bg-white text-orange-600 shadow-md shadow-orange-100' : 'text-slate-500 hover:text-slate-700'}`}
