@@ -1,129 +1,111 @@
 # 📦 SUT Engineering Asset Hub
-### ระบบจองและติดตามสถานะอุปกรณ์ห้องปฏิบัติการ (Computer Engineering Lab Asset Management System)
+> **Modern Lab Asset Management System with DevOps & Security Best Practices**
 
-ยินดีต้อนรับสู่ **SUT Engineering Asset Hub** โปรเจกต์เว็บแอปพลิเคชันสำหรับบริหารจัดการการยืม-คืนครุภัณฑ์และอุปกรณ์ในห้องปฏิบัติการ พัฒนาด้วยเทคโนโลยีเว็บสมัยใหม่ (Modern Web Stack) เน้นความสวยงาม ใช้งานง่าย และมีความปลอดภัย
+ยินดีต้อนรับสู่ **SUT Engineering Asset Hub** ระบบบริหารจัดการการยืม-คืนครุภัณฑ์ในห้องปฏิบัติการวิศวกรรมคอมพิวเตอร์ โปรเจกต์นี้ถูกพัฒนาขึ้นไม่เพียงเพื่อแก้ปัญหาการจัดการอุปกรณ์ แต่ยังเน้นการใช้ **Modern DevOps & Security Stack** เพื่อให้พร้อมสำหรับการใช้งานจริง (Production Grade)
 
 ![App Screenshot](https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop) *(ภาพจำลอง)*
 
 ---
 
-## ✨ ฟีเจอร์เด่น (Key Features)
+## 🌟 ฟีเจอร์เด่น (Key Features)
 
-### 👤 สำหรับผู้ใช้งานรับ (Student)
-- **Browse Assets:** ค้นหาและดูรายการอุปกรณ์ที่สามารถยืมได้ พร้อมสถานะ Real-time (Available/Borrowed).
-- **Booking System:** ทำรายการขอยืมอุปกรณ์ ระบุวันที่คืนและเหตุผล.
-- **My History:** ติดตามสถานะคำขอของตัวเอง (Pending, Approved, Rejected, Returned) และดูประวัติย้อนหลัง.
-- **Notification:** แจ้งเตือนสถานะการทำรายการที่ชัดเจน.
+### � User Experience
+- **Interactive Dashboard:** หน้าต่างแสดงรายการครุภัณฑ์แบบ Real-time พร้อมรูปภาพและสถานะ
+- **Smart Booking:** ระบบจองที่ตรวจสอบความพร้อมของอุปกรณ์ทันที
+- **History Tracking:** ดูประวัติการยืม-คืนย้อนหลังได้ทั้งหมด
 
-### 🛡️ สำหรับผู้ดูแลระบบ (Admin)
-- **Dashboard Overview:** ดูภาพรวมสถิติ จำนวนอุปกรณ์ทั้งหมด, รายการที่ถูกยืม, และคำขอที่รอดำเนินการ.
-- **Asset Management:** เพิ่ม, ลบ, แก้ไขข้อมูลอุปกรณ์ และอัปโหลดรูปภาพครุภัณฑ์.
-- **Transaction Management:**
-  - **Approve/Reject:** พิจารณาอนุมัติหรือปฏิเสธคำขอยืม.
-  - **Return:** บันทึกการรับคืนอุปกรณ์เมื่อนักศึกษานำมาคืน.
-- **Secure Access:** ระบบป้องกันสิทธิ์ เข้าถึงได้เฉพาะ User ที่มี Role เป็น Admin เท่านั้น.
+### 🛡️ Security & Pentesting (Verified)
+- **Role-Based Access Control (RBAC):** แยกสิทธิ์ Admin/Student ชัดเจน (Verified via Postman)
+- **Secure Authentication:** JWT (JSON Web Tokens) + Bcrypt Hashing + PIN Recovery
+- **Protection:**
+    - ✅ **XSS Protection:** ป้องกันการฝัง Script (Auto-escaping by React)
+    - ✅ **IDOR Protection:** ป้องกันการแอบดูข้อมูลผู้อื่น (Secure Token Validation)
+    - ✅ **Security Headers:** HSTS, CSP, X-Frame-Options (Verified by OWASP ZAP)
+
+### 🔧 DevOps & Monitoring
+- **Containerization:** รันทุกอย่างบน **Docker** (Frontend, Backend, DB, Certbot, Monitoring)
+- **CI/CD Pipeline:** อัตโนมัติด้วย **Jenkins** (Poll SCM -> Build -> Deploy)
+- **Observability:**
+    - **Prometheus:** ดึง Metrics การทำงานของ Server (CPU, RAM, Request Count)
+    - **Grafana:** Dashboard สวยงามสำหรับดูสถานะระบบแบบ Real-time
+- **Database Management:** **Adminer** (Web GUI) สำหรับจัดการ Database
 
 ---
 
 ## 🛠️ เทคโนโลยีที่ใช้ (Tech Stack)
 
-### Frontend (Client)
-- **Framework:** [React](https://react.dev/) + [Vite](https://vitejs.dev/) (เพื่อประสิทธิภาพที่รวดเร็ว)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/) (ตกแต่งหน้าตาด้วย Utility-first classes)
-- **Icons:** [Lucide React](https://lucide.dev/)
-- **Feedback:** [React Hot Toast](https://react-hot-toast.com/) (แจ้งเตือนสวยงาม)
-
-### Backend (Server)
-- **Runtime:** [Node.js](https://nodejs.org/) & [Express.js](https://expressjs.com/)
-- **Database:** [PostgreSQL](https://www.postgresql.org/)
-- **ORM:** [Prisma](https://www.prisma.io/) (จัดการฐานข้อมูลได้ง่ายและ Type-safe)
-- **Authentication:** JWT (JSON Web Tokens) & Bcryptjs (Hash รหัสผ่าน)
-- **File Upload:** Multer (จัดการอัปโหลดรูปภาพ)
+| Category | Technology |
+|----------|------------|
+| **Frontend** | [React](https://react.dev/), [Vite](https://vitejs.dev/), [Tailwind CSS](https://tailwindcss.com/) |
+| **Backend** | [Node.js](https://nodejs.org/), [Express.js](https://expressjs.com/) |
+| **Database** | [PostgreSQL](https://www.postgresql.org/) via [Prisma ORM](https://www.prisma.io/) |
+| **DevOps** | [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) |
+| **CI/CD** | [Jenkins](https://www.jenkins.io/) |
+| **Web Server** | [Nginx](https://nginx.org/) (Reverse Proxy, SSL, Caching) |
+| **Monitoring** | [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/) |
+| **Testing** | [Postman](https://www.postman.com/), [OWASP ZAP](https://www.zaproxy.org/) |
 
 ---
 
-## 🚀 วิธีการติดตั้งและรันโปรเจกต์ (Installation Guide)
+## 🚀 วิธีการติดตั้งและใช้งาน (Production / Docker)
 
-### สิ่งที่ต้องมี (Prerequisites)
-- Node.js (v16 ขึ้นไป)
-- PostgreSQL Database
+วิธีที่ง่ายที่สุดคือการรันผ่าน **Docker Compose** (ไม่ต้องลง Node/Postgres ในเครื่อง)
 
-### 1. ติดตั้งส่วน Backend (Server)
-1. เปิด Terminal และเข้าไปที่โฟลเดอร์ `server`:
-   ```bash
-   cd server
-   ```
-2. ติดตั้ง Dependencies:
-   ```bash
-   npm install
-   ```
-3. ตั้งค่า Environment Variables:
-   - สร้างไฟล์ `.env` ในโฟลเดอร์ `server`
-   - ใส่ค่า Config ดังนี้:
-     ```env
-     DATABASE_URL="postgresql://username:password@localhost:5432/your_database_name"
-     JWT_SECRET="your_secret_key_change_me"
-     PORT=3000
-     ```
-4. สร้างตารางในฐานข้อมูล (Prisma Migrate):
-   ```bash
-   npx prisma migrate dev --name init
-   ```
-5. เริ่มต้น Server:
-   ```bash
-   npm run dev
-   ```
-   *(Server จะรันที่ http://localhost:3000)*
+### 1. Clone Project
+```bash
+git clone https://github.com/Gucci-belt/1101103-SUT-Engineering-Asset-Hub.git
+cd 1101103-SUT-Engineering-Asset-Hub
+```
 
-### 2. ติดตั้งส่วน Frontend (Client)
-1. เปิด Terminal ใหม่ และเข้าไปที่โฟลเดอร์ `client`:
-   ```bash
-   cd client
-   ```
-2. ติดตั้ง Dependencies:
-   ```bash
-   npm install
-   ```
-3. เริ่มต้น Frontend:
-   ```bash
-   npm run dev
-   ```
-4. เปิด Browser ไปที่ลิงก์ที่แสดง (ปกติคือ `http://localhost:5173`)
+### 2. Setup Environment Variables
+เข้าไปที่โฟลเดอร์ `server` และสร้างไฟล์ `.env`:
+```env
+DATABASE_URL="postgresql://user:password@db:5432/it_assets?schema=public"
+JWT_SECRET="supersecretkey"
+PORT=3000
+```
+
+### 3. Run with Docker Compose
+คำสั่งเดียว จบทุกอย่าง (Frontend, Backend, DB, Prometheus, Grafana, Adminer):
+```bash
+docker-compose -f docker-compose.prod.yml up -d --build
+```
+
+### 4. Access the Application
+- **Web App:** `https://your-domain.com` (หรือ `http://localhost`)
+- **Grafana (Monitoring):** `http://localhost:3001` (User: `admin` / Pass: `admin`)
+- **Adminer (DB GUI):** `http://localhost:8081` (System: `PostgreSQL`, Server: `db`, User: `user`, Pass: `password`)
+- **Jenkins:** `http://localhost:8080`
 
 ---
 
-## 📝 วิธีการใช้งานเบื้องต้น
+## 📝 คู่มือการทดสอบความปลอดภัย (Security Testing)
+โปรเจกต์นี้ผ่านการทดสอบความปลอดภัยตามมาตรฐาน **OWASP WSTG Checklist**:
+1.  **Automated Scan:** ผ่านการสแกนด้วย **OWASP ZAP** (Baseline Scan)
+2.  **Manual Test:**
+    - ทดสอบ **XSS** บน React Component
+    - ทดสอบ **IDOR** บน Transaction API
+    - ทดสอบ **Access Control** บน Admin Route
 
-1. **เข้าสู่ระบบครั้งแรก:**
-   - ลงทะเบียน (Sign Up) เพื่อสร้างบัญชีใหม่ (ระบบจะกำหนดสถานะเป็น `Student`).
-2. **การทดสอบ Admin:**
-   - เนื่องจากระบบรับสมัครสมาชิกเป็น Student โดย Default ให้เข้าไปแก้ไขข้อมูลในฐานข้อมูล (Table `User`) โดยเปลี่ยนคอลัมน์ `role` จาก `student` เป็น `admin`.
-   - หรือใช้ Seed script (ถ้ามี).
-3. **การยืมอุปกรณ์:**
-   - Login ด้วย Student -> เลือกอุปกรณ์ -> กดปุ่มยืม (กล่องของขวัญ) -> กรอกข้อมูล -> รอ Admin อนุมัติ.
-4. **การคืน/อนุมัติ:**
-   - Login ด้วย Admin -> ไปที่ Dashboard -> Tab Transaction -> กด Approve หรือ Mark as Returned.
+*(ดูเอกสารฉบับเต็มได้ที่ `Pentest_Guide_TH.md` ในโฟลเดอร์ Documentation)*
 
 ---
 
 ## 📁 โครงสร้างโปรเจกต์ (Folder Structure)
 
 ```
-Plan-Project/
-├── client/              # Source code ฝั่งหน้าเว็บ (React)
-│   ├── src/
-│   │   ├── components/  # ชิ้นส่วนหน้าจอ (Modal, Card, Navbar)
-│   │   ├── App.jsx      # หน้าจอหลักและการเชื่อมต่อ Logic
-│   │   └── ...
-├── server/              # Source code ฝั่งหลังบ้าน (Express API)
-│   ├── prisma/          # Database Schema
-│   ├── src/
-│   │   ├── controllers/ # Logic การทำงาน (Assets, Transactions)
-│   │   ├── middleware/  # ระบบตรวจสอบสิทธิ์ (AuthMiddleware)
-│   │   ├── routes/      # กำหนด API Endpoints
-│   │   └── index.js     # จุดเริ่มต้นของ Server
-│   └── uploads/         # ที่เก็บไฟล์รูปภาพ
-└── README.md            # คู่มือการใช้งาน
+Project Root/
+├── client/              # React Frontend + Nginx Config
+├── server/              # Express Backend + Prisma
+│   ├── src/             
+│   │   ├── controllers/ # Business Logic
+│   │   ├── routes/      # API Endpoints
+│   │   └── middleware/  # Auth & Security Logic
+├── tests/               # Load Testing Scripts (k6)
+├── docker-compose.prod.yml # Production Orchestration
+├── prometheus.yml       # Monitoring Config
+├── Jenkinsfile          # CI/CD Pipeline Definitions
+└── README.md            # You are here!
 ```
 
 ---
