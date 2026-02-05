@@ -106,7 +106,7 @@ const StudentDashboard = ({ assets, refreshAssets, studentId, userId }) => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
                     {/* Filters */}
                     <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 p-4 mb-10 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div className="flex gap-2 overflow-x-auto">
+                        <div className="flex flex-wrap gap-2 justify-center md:justify-start w-full md:w-auto">
                             {categories.map(cat => (
                                 <button key={cat} onClick={() => setSelectedCategory(cat)}
                                     className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${selectedCategory === cat ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}>
