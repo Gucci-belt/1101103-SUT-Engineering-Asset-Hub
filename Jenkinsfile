@@ -12,6 +12,18 @@ pipeline {
     }
 
     stages {
+        stage('Security Scan') {
+            steps {
+                script {
+                    sh """
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                        -v ${PROJECT_DIR}:${PROJECT_DIR} \
+                        -v /tmp/trivy:/root/.cache/trivy \
+                        aquasec/trivy fs --security-checks vuln,config --exit-code 1 --severity CRITICAL ${PROJECT_DIR}
+                    """
+                }
+            }
+        }
         stage('Deploy') {
             steps {
                 script {
