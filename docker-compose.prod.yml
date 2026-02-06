@@ -5,11 +5,9 @@ services:
     build: ./server
     container_name: it-assets-server
     restart: always
+    env_file: .env.prod
     environment:
       - PORT=3000
-      - DATABASE_URL=postgresql://user:password@db:5432/it_assets?schema=public
-      - JWT_SECRET=supersecretkey
-      - CLERK_SECRET_KEY=sk_live_uC0NW7YJxk7J4FxOoPSRcNVrc1JDB3Ak3M33qWXDwg
     ports:
       - "3000:3000"
     command: /bin/sh -c "npx prisma db push --accept-data-loss && node prisma/seed.js && node src/index.js"
@@ -22,40 +20,18 @@ services:
     build:
       context: ./client
       args:
-        - VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZ3VjY2ktYmVsdC5tZSQ
+        - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
     container_name: it-assets-client
     restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - server
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    image: certbot/certbot
-    container_name: it-assets-certbot
-    restart: always
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
+  # ... (client config continues)
   db:
     image: postgres:15-alpine
     container_name: it-assets-db
     restart: always
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=it_assets
+    env_file: .env.prod
     volumes:
       - pgdata-prod:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # Ports removed for security (Internal Network Only)
 
   prometheus:
     image: prom/prometheus

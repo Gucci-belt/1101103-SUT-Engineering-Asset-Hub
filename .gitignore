@@ -67,6 +67,8 @@ typings/
 .env.production
 .env.local
 
+.env.prod
+
 # Serverless directories
 .serverless/
 
@@ -88,3 +90,18 @@ build
 *.sln
 *.sw?
 prometheus.yml
+
+# --- Security & Local Data ---
+certbot/
+server/uploads/
+server/prisma/dev.db
+server/prisma/dev.db-journal
+
+# --- OS System Files ---
+.DS_Store
+Thumbs.db
+
+# --- Hardhat / Smart Contracts (Future Proof) ---
+artifacts/
+cache/
+typechain-types/

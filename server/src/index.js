@@ -60,6 +60,13 @@ const SECRET_KEY = process.env.JWT_SECRET || 'supersecretkey';
 // --- 0. Authentication APIs ---
 app.post('/api/auth/register', async (req, res) => {
     let { studentId, password, role, pin } = req.body;
+    console.log(`[REGISTER] Request for: ${studentId}, Role: ${role}`); // DEBUG Log
+
+    if (!studentId || !password) {
+        console.log(`[REGISTER] Missing fields`);
+        return res.status(400).json({ error: "Missing studentId or password" });
+    }
+
     studentId = studentId.toLowerCase(); // Normalize
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -67,32 +74,47 @@ app.post('/api/auth/register', async (req, res) => {
             data: {
                 studentId,
                 passwordHash: hashedPassword,
-                role: role || 'student', // Allow role override if needed, or stick to logic
+                role: role || 'student',
                 pin: pin || '1234'
             }
         });
+        console.log(`[REGISTER] Success: UserID ${user.id}`); // DEBUG Log
         res.json({ message: 'User registered successfully', userId: user.id });
     } catch (err) {
+        console.error(`[REGISTER] Error:`, err); // DEBUG Log
         if (err.code === 'P2002') {
             return res.status(400).json({ error: 'Student ID already exists' });
         }
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message, stack: err.stack }); // Return Stack for Debugging
     }
 });
 
 app.post('/api/auth/login', async (req, res) => {
     let { studentId, password } = req.body;
+    console.log(`[LOGIN] Request for: ${studentId}`); // DEBUG Log
+
     studentId = studentId.toLowerCase(); // Normalize
     try {
         const user = await prisma.user.findUnique({ where: { studentId } });
-        if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+
+        if (!user) {
+            console.log(`[LOGIN] User not found: ${studentId}`); // DEBUG Log
+            return res.status(400).json({ error: 'Invalid credentials (User not found)' });
+        }
 
         const validPassword = await bcrypt.compare(password, user.passwordHash);
-        if (!validPassword) return res.status(400).json({ error: 'Invalid credentials' });
+        if (!validPassword) {
+            console.log(`[LOGIN] Password mismatch for: ${studentId}`); // DEBUG Log
+            return res.status(400).json({ error: 'Invalid credentials (Password mismatch)' });
+        }
 
+        console.log(`[LOGIN] Success: ${studentId}`); // DEBUG Log
         const token = jwt.sign({ id: user.id, role: user.role, studentId: user.studentId }, SECRET_KEY, { expiresIn: '1h' });
         res.json({ token, role: user.role, studentId: user.studentId, userId: user.id });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (err) {
+        console.error(`[LOGIN] Error:`, err); // DEBUG Log
+        res.status(500).json({ error: err.message, stack: err.stack }); // Return Stack for Debugging
+    }
 });
 
 // TQF3 Requirement: Reset Password (Secured with PIN)
