@@ -59,82 +59,68 @@ const SECRET_KEY = process.env.JWT_SECRET || 'supersecretkey';
 
 // --- 0. Authentication APIs ---
 app.post('/api/auth/register', async (req, res) => {
-    const { studentId, password, role, pin } = req.body; // Accept PIN
+    let { studentId, password, role, pin } = req.body;
+    studentId = studentId.toLowerCase(); // Normalize
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.user.create({
-            data: {
-                studentId,
-                passwordHash: hashedPassword,
-                passwordHash: hashedPassword,
-                role: 'student', // FORCE STUDENT ROLE: Prevent creating new admins via API
-                pin: pin || '1234' // Default PIN if not provided (for simplicity)
-            }
+        // ...
+        // ...
+        app.post('/api/auth/login', async (req, res) => {
+            let { studentId, password } = req.body;
+            studentId = studentId.toLowerCase(); // Normalize
+            try {
+                const user = await prisma.user.findUnique({ where: { studentId } });
+                if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+
+                const validPassword = await bcrypt.compare(password, user.passwordHash);
+                if (!validPassword) return res.status(400).json({ error: 'Invalid credentials' });
+
+                const token = jwt.sign({ id: user.id, role: user.role, studentId: user.studentId }, SECRET_KEY, { expiresIn: '1h' });
+                res.json({ token, role: user.role, studentId: user.studentId, userId: user.id });
+            } catch (err) { res.status(500).json({ error: err.message }); }
         });
-        res.json({ message: 'User registered successfully', userId: user.id });
-    } catch (err) {
-        if (err.code === 'P2002') {
-            return res.status(400).json({ error: 'Student ID already exists' });
-        }
-        res.status(500).json({ error: err.message });
-    }
-});
 
-app.post('/api/auth/login', async (req, res) => {
-    const { studentId, password } = req.body;
-    try {
-        const user = await prisma.user.findUnique({ where: { studentId } });
-        if (!user) return res.status(400).json({ error: 'Invalid credentials' });
+        // TQF3 Requirement: Reset Password (Secured with PIN)
+        app.post('/api/auth/reset-password', async (req, res) => {
+            const { studentId, newPassword, pin } = req.body;
+            try {
+                // 1. Find user
+                const user = await prisma.user.findUnique({ where: { studentId } });
+                if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const validPassword = await bcrypt.compare(password, user.passwordHash);
-        if (!validPassword) return res.status(400).json({ error: 'Invalid credentials' });
+                // 2. Check PIN
+                // If user has no PIN (old users), we might fallback or deny. Let's deny to be safe, or allow '1234'.
+                const userPin = user.pin || '1234';
+                if (userPin !== pin) {
+                    return res.status(401).json({ error: 'Invalid Security PIN' });
+                }
 
-        const token = jwt.sign({ id: user.id, role: user.role, studentId: user.studentId }, SECRET_KEY, { expiresIn: '1h' });
-        res.json({ token, role: user.role, studentId: user.studentId, userId: user.id });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// TQF3 Requirement: Reset Password (Secured with PIN)
-app.post('/api/auth/reset-password', async (req, res) => {
-    const { studentId, newPassword, pin } = req.body;
-    try {
-        // 1. Find user
-        const user = await prisma.user.findUnique({ where: { studentId } });
-        if (!user) return res.status(404).json({ error: 'User not found' });
-
-        // 2. Check PIN
-        // If user has no PIN (old users), we might fallback or deny. Let's deny to be safe, or allow '1234'.
-        const userPin = user.pin || '1234';
-        if (userPin !== pin) {
-            return res.status(401).json({ error: 'Invalid Security PIN' });
-        }
-
-        // 3. Reset Password
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await prisma.user.update({
-            where: { studentId },
-            data: { passwordHash: hashedPassword }
+                // 3. Reset Password
+                const hashedPassword = await bcrypt.hash(newPassword, 10);
+                await prisma.user.update({
+                    where: { studentId },
+                    data: { passwordHash: hashedPassword }
+                });
+                res.json({ message: 'Password reset successfully' });
+            } catch (err) { res.status(500).json({ error: err.message }); }
         });
-        res.json({ message: 'Password reset successfully' });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
 
-// --- 2. Asset Management ---
-const assetRoutes = require('./routes/assetRoutes');
-app.use('/api/assets', assetRoutes);
+        // --- 2. Asset Management ---
+        const assetRoutes = require('./routes/assetRoutes');
+        app.use('/api/assets', assetRoutes);
 
-const userRoutes = require('./routes/userRoutes');
-app.use('/api/users', userRoutes);
+        const userRoutes = require('./routes/userRoutes');
+        app.use('/api/users', userRoutes);
 
-// --- 3. Transaction/Borrowing & Admin Workflow ---
-// Matches /api/transactions/borrow, /api/transactions/my-history
-app.use('/api/transactions', transactionRoutes);
+        // --- 3. Transaction/Borrowing & Admin Workflow ---
+        // Matches /api/transactions/borrow, /api/transactions/my-history
+        app.use('/api/transactions', transactionRoutes);
 
-// Matches /api/admin/transactions (GET all, approve, etc - protected in routes)
-app.use('/api/admin/transactions', transactionRoutes);
+        // Matches /api/admin/transactions (GET all, approve, etc - protected in routes)
+        app.use('/api/admin/transactions', transactionRoutes);
 
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
 

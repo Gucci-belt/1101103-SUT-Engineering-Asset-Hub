@@ -21,14 +21,15 @@ async function main() {
         },
     });
 
-    // Student (B6701970)
+    // Student (b6701970)
     await prisma.user.upsert({
-        where: { studentId: 'B6701970' }, // Standardize to Uppercase for ID
+        where: { studentId: 'b6701970' }, // Lowercase
         update: {
-            passwordHash: commonPassword, // Update password if exists
+            passwordHash: commonPassword,
+            pin: '1234'
         },
         create: {
-            studentId: 'B6701970',
+            studentId: 'b6701970',
             passwordHash: commonPassword,
             role: 'student',
             pin: '1234'
