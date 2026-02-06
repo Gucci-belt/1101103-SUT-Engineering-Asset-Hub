@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useUser, useClerk, SignIn, UserButton } from "@clerk/clerk-react";
 import { Toaster } from 'react-hot-toast';
 import { API_URL } from './config';
 import Navbar from './components/layout/Navbar';
-import AuthScreen from './components/auth/AuthScreen';
 import StudentDashboard from './components/student/StudentDashboard';
 import AdminDashboard from './components/admin/AdminDashboard';
 
@@ -17,7 +17,11 @@ const App = () => {
   const [assets, setAssets] = useState([]);
   const [requests, setRequests] = useState([]);
 
-  // --- Auth State ---
+  // --- Clerk Hook ---
+  const { signOut } = useClerk();
+  const { isSignedIn, user, isLoaded } = useUser();
+
+  // --- Auth State Sync ---
   useEffect(() => {
     if (token) {
       fetchAssets();
@@ -25,11 +29,25 @@ const App = () => {
     }
   }, [token, viewMode, userRole]);
 
+  // Sync Clerk -> Local State
+  useEffect(() => {
+    if (isLoaded && isSignedIn && user && !token) {
+      // Mock Login: In a real app, you'd send the Clerk token to backend to get a JWT
+      // Here we just mock the session so the UI works
+      login({
+        token: "mock-clerk-token-" + user.id,
+        role: "student", // Default role
+        studentId: user.fullName || "Student",
+        userId: user.id
+      });
+    }
+  }, [isLoaded, isSignedIn, user, token]);
+
   const login = (data) => {
     setToken(data.token);
     setUserRole(data.role);
     setStudentId(data.studentId);
-    setUserId(data.userId); // Store userId
+    setUserId(data.userId);
     localStorage.setItem('token', data.token);
     localStorage.setItem('role', data.role);
     localStorage.setItem('studentId', data.studentId);
@@ -38,6 +56,7 @@ const App = () => {
   };
 
   const logout = () => {
+    signOut(); // Sign out from Clerk
     setToken(null);
     setUserRole(null);
     setStudentId('');
@@ -57,7 +76,9 @@ const App = () => {
 
       const mapped = data.map(a => ({
         ...a,
-        image: a.imagePath ? (a.imagePath.startsWith('http') ? a.imagePath : `${API_URL.replace('/api', '')}${a.imagePath}`) : 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b'
+        image: a.imagePath
+          ? (a.imagePath.startsWith('http') ? a.imagePath : `${API_URL.replace('/api', '')}${a.imagePath}`)
+          : 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b'
       }));
       setAssets(mapped);
     } catch (err) { console.error("Error fetching assets:", err); }
@@ -80,10 +101,24 @@ const App = () => {
     } catch (err) { console.error("Error fetching requests:", err); }
   };
 
-  if (!token) {
-    return <AuthScreen onLogin={login} />;
+  // --- Loading State ---
+  if (!isLoaded) {
+    return <div className="flex justify-center items-center h-screen">Loading Clerk...</div>;
   }
 
+  // --- Auth Screen (Clerk) ---
+  if (!isSignedIn) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-slate-100">
+        <div className="p-8 bg-white rounded-xl shadow-lg">
+          <h1 className="text-2xl font-bold text-center mb-6 text-blue-600">SUT Asset Hub</h1>
+          <SignIn />
+        </div>
+      </div>
+    );
+  }
+
+  // --- Main App ---
   return (
     <div className="min-h-screen bg-slate-50 font-['Prompt',_sans-serif] text-slate-800 pb-20">
       <Toaster position="top-center" reverseOrder={false} />
