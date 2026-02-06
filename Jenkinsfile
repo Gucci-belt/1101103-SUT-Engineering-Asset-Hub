@@ -28,8 +28,8 @@ pipeline {
                         git reset --hard origin/main
                         
                         echo "Deploying with Docker Compose..."
-                        # Ensure we use the production compose file
-                        docker compose -f docker-compose.prod.yml up -d --build
+                        # Ensure we use the production compose file with secure env vars
+                        docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
                         
                         echo "Cleaning up..."
                         docker image prune -f
