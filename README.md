@@ -3,7 +3,7 @@
 
 ยินดีต้อนรับสู่ **SUT Engineering Asset Hub** ระบบบริหารจัดการการยืม-คืนครุภัณฑ์ในห้องปฏิบัติการวิศวกรรมคอมพิวเตอร์ โปรเจกต์นี้ถูกพัฒนาขึ้นไม่เพียงเพื่อแก้ปัญหาการจัดการอุปกรณ์ แต่ยังเน้นการใช้ **Modern DevOps & Security Stack** เพื่อให้พร้อมสำหรับการใช้งานจริง (Production Grade)
 
-![App Screenshot](https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1000&auto=format&fit=crop) *(ภาพจำลอง)*
+![App Screenshot](https://www.dexerto.com/cdn-image/wp-content/uploads/2025/10/30/67-kid-meme-word-of-the-year.jpg) **
 
 ---
 

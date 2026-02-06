@@ -87,3 +87,4 @@ build
 *.njsproj
 *.sln
 *.sw?
+prometheus.yml
