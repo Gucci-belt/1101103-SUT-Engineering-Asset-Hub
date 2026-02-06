@@ -23,6 +23,15 @@ services:
         - VITE_CLERK_PUBLISHABLE_KEY=${VITE_CLERK_PUBLISHABLE_KEY}
     container_name: it-assets-client
     restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - server
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
   # ... (client config continues)
   db:
     image: postgres:15-alpine
