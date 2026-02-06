@@ -102,10 +102,8 @@ const App = () => {
     } catch (err) { console.error("Error fetching requests:", err); }
   };
 
-  // --- Loading State ---
-  if (!isLoaded) {
-    return <div className="flex justify-center items-center h-screen">Loading Clerk...</div>;
-  }
+  // --- Loading State (Removed for better UX - app handles undefined states) ---
+  // if (!isLoaded) return null; // or show nothing
 
   // --- Auth Screen (Clerk OR Custom Token) ---
   if (!isSignedIn && !token) {
