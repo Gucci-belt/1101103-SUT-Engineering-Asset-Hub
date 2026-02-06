@@ -15,6 +15,9 @@ RUN npx prisma generate
 
 EXPOSE 3000
 
+# Fix permissions for USER node
+RUN chown -R node:node /app
+
 USER node
 
 CMD ["node", "src/index.js"]
