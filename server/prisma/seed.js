@@ -4,16 +4,18 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-    const password = await bcrypt.hash('password123', 10);
-    const studentPassword = await bcrypt.hash('12345678', 10); // Standard password
+    // Common password for both accounts
+    const commonPassword = await bcrypt.hash('nigga2548', 10);
 
     // Admin
     await prisma.user.upsert({
         where: { studentId: 'admin' },
-        update: {},
+        update: {
+            passwordHash: commonPassword, // Update password if exists
+        },
         create: {
             studentId: 'admin',
-            passwordHash: password,
+            passwordHash: commonPassword,
             role: 'admin',
             pin: '0000'
         },
@@ -21,17 +23,19 @@ async function main() {
 
     // Student (B6701970)
     await prisma.user.upsert({
-        where: { studentId: 'B6701970' },
-        update: {},
+        where: { studentId: 'B6701970' }, // Standardize to Uppercase for ID
+        update: {
+            passwordHash: commonPassword, // Update password if exists
+        },
         create: {
             studentId: 'B6701970',
-            passwordHash: studentPassword,
+            passwordHash: commonPassword,
             role: 'student',
             pin: '1234'
         },
     });
 
-    console.log('Seeding finished.');
+    console.log('Seeding finished. Passwords updated.');
 }
 
 main()
