@@ -3,6 +3,7 @@ import { useUser, useClerk, SignIn, UserButton } from "@clerk/clerk-react";
 import { Toaster } from 'react-hot-toast';
 import { API_URL } from './config';
 import Navbar from './components/layout/Navbar';
+import AuthScreen from './components/auth/AuthScreen';
 import StudentDashboard from './components/student/StudentDashboard';
 import AdminDashboard from './components/admin/AdminDashboard';
 
