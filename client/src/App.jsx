@@ -108,14 +108,7 @@ const App = () => {
 
   // --- Auth Screen (Clerk) ---
   if (!isSignedIn) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-slate-100">
-        <div className="p-8 bg-white rounded-xl shadow-lg">
-          <h1 className="text-2xl font-bold text-center mb-6 text-blue-600">SUT Asset Hub</h1>
-          <SignIn />
-        </div>
-      </div>
-    );
+    return <AuthScreen onLogin={login} />;
   }
 
   // --- Main App ---
