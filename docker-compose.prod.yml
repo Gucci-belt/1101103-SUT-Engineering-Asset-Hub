@@ -9,7 +9,7 @@ services:
       - PORT=3000
       - DATABASE_URL=postgresql://user:password@db:5432/it_assets?schema=public
       - JWT_SECRET=supersecretkey
-      - CLERK_SECRET_KEY=sk_test_QUcuUGbgiiL4OxfFNfpEDnsPvaCeaY5nJR44qdhwrI
+      - CLERK_SECRET_KEY=sk_live_uC0NW7YJxk7J4FxOoPSRcNVrc1JDB3Ak3M33qWXDwg
     ports:
       - "3000:3000"
     depends_on:
@@ -21,7 +21,7 @@ services:
     build:
       context: ./client
       args:
-        - VITE_CLERK_PUBLISHABLE_KEY=pk_test_bGVnYWwtdXJjaGluLTgwLmNsZXJrLmFjY291bnRzLmRldiQ
+        - VITE_CLERK_PUBLISHABLE_KEY=pk_live_Y2xlcmsuZ3VjY2ktYmVsdC5tZSQ
     container_name: it-assets-client
     restart: always
     ports:
