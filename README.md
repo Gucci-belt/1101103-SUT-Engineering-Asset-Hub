@@ -1,34 +1,35 @@
 # 📦 SUT Engineering Asset Hub
 > **Modern Lab Asset Management System with DevOps & Security Best Practices**
 
-ยินดีต้อนรับสู่ **SUT Engineering Asset Hub** ระบบบริหารจัดการการยืม-คืนครุภัณฑ์ในห้องปฏิบัติการวิศวกรรมคอมพิวเตอร์ โปรเจกต์นี้ถูกพัฒนาขึ้นไม่เพียงเพื่อแก้ปัญหาการจัดการอุปกรณ์ แต่ยังเน้นการใช้ **Modern DevOps & Security Stack** เพื่อให้พร้อมสำหรับการใช้งานจริง (Production Grade)
+ยินดีต้อนรับสู่ **SUT Engineering Asset Hub** ระบบบริหารจัดการการยืม-คืนครุภัณฑ์ในห้องปฏิบัติการวิศวกรรมคอมพิวเตอร์ โปรเจกต์นี้ถูกพัฒนาขึ้นเพื่อยกระดับมาตรฐานความปลอดภัยและการจัดการด้วย **Modern DevOps Stack** (Docker, Jenkins, Trivy) และ **Production-Grade Security Architecture**
 
-![App Screenshot](https://www.dexerto.com/cdn-image/wp-content/uploads/2025/10/30/67-kid-meme-word-of-the-year.jpg) **
+![App Banner](https://www.dexerto.com/cdn-image/wp-content/uploads/2025/10/30/67-kid-meme-word-of-the-year.jpg)
 
 ---
 
 ## 🌟 ฟีเจอร์เด่น (Key Features)
 
-### � User Experience
-- **Interactive Dashboard:** หน้าต่างแสดงรายการครุภัณฑ์แบบ Real-time พร้อมรูปภาพและสถานะ
-- **Smart Booking:** ระบบจองที่ตรวจสอบความพร้อมของอุปกรณ์ทันที
-- **History Tracking:** ดูประวัติการยืม-คืนย้อนหลังได้ทั้งหมด
+### 🔐 Advanced Authentication (New!)
+- **Dual Login System:** รองรับทั้ง **Google SSO** (via Clerk) และ **Custom JWT System**
+- **Seamless UX:** ระบบตรวจสอบสิทธิ์อัตโนมัติ ไม่ต้อง Login ซ้ำ
+- **Secure Session:** ใช้ HttpOnly Cookies และป้องกัน Token Theft
 
-### 🛡️ Security & Pentesting (Verified)
-- **Role-Based Access Control (RBAC):** แยกสิทธิ์ Admin/Student ชัดเจน (Verified via Postman)
-- **Secure Authentication:** JWT (JSON Web Tokens) + Bcrypt Hashing + PIN Recovery
-- **Protection:**
-    - ✅ **XSS Protection:** ป้องกันการฝัง Script (Auto-escaping by React)
-    - ✅ **IDOR Protection:** ป้องกันการแอบดูข้อมูลผู้อื่น (Secure Token Validation)
-    - ✅ **Security Headers:** HSTS, CSP, X-Frame-Options (Verified by OWASP ZAP)
+### 🛡️ Production-Grade Security (Verified)
+- **Secrets Management:** ไม่มีการ Hardcode รหัสผ่านใน Source Code (ใช้ `.env.prod` Injection)
+- **Container Hardening:**
+    - ✅ **Rootless Containers:** Server รันด้วย `USER node` เพื่อจำกัดสิทธิ์ (Least Privilege)
+    - ✅ **Network Isolation:** Database ไม่เปิด Port สู่สาธารณะ (Internal Network Only)
+- **CI/CD Security:**
+    - ✅ **Automated Vulnerability Scanning:** สแกนหาช่องโหว่ด้วย **Trivy** ก่อน Deploy ทุกครั้ง
+    - ✅ **GitOps:** ตรวจสอบความปลอดภัยของ Dependencies อัตโนมัติ
+- **Web Server Hardening:**
+    - ✅ **Nginx Security Headers:** HSTS, CSP (Content Security Policy), X-Frame-Options
+    - ✅ **Rate Limiting:** ป้องกันการโจมตีแบบ Brute Force และ DDoS
 
-### 🔧 DevOps & Monitoring
-- **Containerization:** รันทุกอย่างบน **Docker** (Frontend, Backend, DB, Certbot, Monitoring)
-- **CI/CD Pipeline:** อัตโนมัติด้วย **Jenkins** (Poll SCM -> Build -> Deploy)
-- **Observability:**
-    - **Prometheus:** ดึง Metrics การทำงานของ Server (CPU, RAM, Request Count)
-    - **Grafana:** Dashboard สวยงามสำหรับดูสถานะระบบแบบ Real-time
-- **Database Management:** **Adminer** (Web GUI) สำหรับจัดการ Database
+### 💻 User Experience
+- **Interactive Dashboard:** แสดงสถานะครุภัณฑ์ Real-time
+- **Smart Booking:** ระบบจองที่ตรวจสอบสถานะอัจฉริยะ
+- **History Tracking:** ตรวจสอบประวัติย้อนหลังได้ 100%
 
 ---
 
@@ -36,58 +37,55 @@
 
 | Category | Technology |
 |----------|------------|
-| **Frontend** | [React](https://react.dev/), [Vite](https://vitejs.dev/), [Tailwind CSS](https://tailwindcss.com/) |
+| **Frontend** | [React](https://react.dev/), [Vite](https://vitejs.dev/), [Clerk Auth](https://clerk.com/) |
 | **Backend** | [Node.js](https://nodejs.org/), [Express.js](https://expressjs.com/) |
 | **Database** | [PostgreSQL](https://www.postgresql.org/) via [Prisma ORM](https://www.prisma.io/) |
 | **DevOps** | [Docker](https://www.docker.com/), [Docker Compose](https://docs.docker.com/compose/) |
-| **CI/CD** | [Jenkins](https://www.jenkins.io/) |
-| **Web Server** | [Nginx](https://nginx.org/) (Reverse Proxy, SSL, Caching) |
+| **Security** | [Trivy](https://trivy.dev/) (Scanner), [OWASP ZAP](https://www.zaproxy.org/) |
+| **CI/CD** | [Jenkins](https://www.jenkins.io/) (Automated Build & Scan) |
 | **Monitoring** | [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/) |
-| **Testing** | [Postman](https://www.postman.com/), [OWASP ZAP](https://www.zaproxy.org/) |
 
 ---
 
-## 🚀 วิธีการติดตั้งและใช้งาน (Production / Docker)
+## 🚀 วิธีการติดตั้งและใช้งาน (Production Deployment)
 
-วิธีที่ง่ายที่สุดคือการรันผ่าน **Docker Compose** (ไม่ต้องลง Node/Postgres ในเครื่อง)
+เนื่องจากระบบเน้นความปลอดภัยไฟล์ `.env.prod` จึงไม่ถูกเก็บใน Git ผู้ดูแลระบบต้องสร้างเองหน้างาน
 
-### 1. Clone Project
-```bash
-git clone https://github.com/Gucci-belt/1101103-SUT-Engineering-Asset-Hub.git
-cd 1101103-SUT-Engineering-Asset-Hub
-```
+### 1. Requirements
+- Server (Ubuntu/Debian) with Docker & Docker Compose installed
+- Domain Name (สำหรับ SSL Configuration)
 
 ### 2. Setup Environment Variables
-เข้าไปที่โฟลเดอร์ `server` และสร้างไฟล์ `.env`:
-```env
-DATABASE_URL="postgresql://user:password@db:5432/it_assets?schema=public"
-JWT_SECRET="supersecretkey"
-PORT=3000
-```
-
-### 3. Run with Docker Compose
-คำสั่งเดียว จบทุกอย่าง (Frontend, Backend, DB, Prometheus, Grafana, Adminer):
+สร้างไฟล์ `.env.prod` บน Server (ที่ Root Directory ของโปรเจกต์):
 ```bash
-docker-compose -f docker-compose.prod.yml up -d --build
+nano .env.prod
+```
+ใส่ค่า Configuration ดังนี้:
+```env
+# Database
+POSTGRES_USER=admin_prod
+POSTGRES_PASSWORD=VeryStrongPassword!
+POSTGRES_DB=it_assets
+DATABASE_URL=postgresql://admin_prod:VeryStrongPassword!@db:5432/it_assets?schema=public
+
+# Server Security
+JWT_SECRET=RandomLongStringForSecurity
+
+# Clerk Auth Keys (From Dashboard)
+CLERK_SECRET_KEY=sk_live_...
+VITE_CLERK_PUBLISHABLE_KEY=pk_live_...
 ```
 
-### 4. Access the Application
-- **Web App:** `https://your-domain.com` (หรือ `http://localhost`)
-- **Grafana (Monitoring):** `http://localhost:3001` (User: `admin` / Pass: `admin`)
-- **Adminer (DB GUI):** `http://localhost:8081` (System: `PostgreSQL`, Server: `db`, User: `user`, Pass: `password`)
-- **Jenkins:** `http://localhost:8080`
+### 3. Deploy
+รันคำสั่ง Docker Compose โดยระบุไฟล์ Env:
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+```
 
----
-
-## 📝 คู่มือการทดสอบความปลอดภัย (Security Testing)
-โปรเจกต์นี้ผ่านการทดสอบความปลอดภัยตามมาตรฐาน **OWASP WSTG Checklist**:
-1.  **Automated Scan:** ผ่านการสแกนด้วย **OWASP ZAP** (Baseline Scan)
-2.  **Manual Test:**
-    - ทดสอบ **XSS** บน React Component
-    - ทดสอบ **IDOR** บน Transaction API
-    - ทดสอบ **Access Control** บน Admin Route
-
-*(ดูเอกสารฉบับเต็มได้ที่ `Pentest_Guide_TH.md` ในโฟลเดอร์ Documentation)*
+### 4. Access Points
+- **Web App:** `https://your-domain.com`
+- **Grafana:** `http://your-domain.com:3001`
+- **Jenkins:** `http://your-domain.com:8080`
 
 ---
 
@@ -95,17 +93,12 @@ docker-compose -f docker-compose.prod.yml up -d --build
 
 ```
 Project Root/
-├── client/              # React Frontend + Nginx Config
-├── server/              # Express Backend + Prisma
-│   ├── src/             
-│   │   ├── controllers/ # Business Logic
-│   │   ├── routes/      # API Endpoints
-│   │   └── middleware/  # Auth & Security Logic
-├── tests/               # Load Testing Scripts (k6)
-├── docker-compose.prod.yml # Production Orchestration
-├── prometheus.yml       # Monitoring Config
-├── Jenkinsfile          # CI/CD Pipeline Definitions
-└── README.md            # You are here!
+├── client/              # React Frontend + Nginx Security Config
+├── server/              # Express Backend + Rootless Dockerfile
+├── docker-compose.prod.yml # Production Orchestration (Secured)
+├── .env.prod.example    # Template for Secrets
+├── Jenkinsfile          # CI/CD Pipeline + Trivy Scan
+└── README.md            # Documentation
 ```
 
 ---
