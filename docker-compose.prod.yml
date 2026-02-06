@@ -12,6 +12,7 @@ services:
       - CLERK_SECRET_KEY=sk_live_uC0NW7YJxk7J4FxOoPSRcNVrc1JDB3Ak3M33qWXDwg
     ports:
       - "3000:3000"
+    command: /bin/sh -c "npx prisma db push && node prisma/seed.js && node src/index.js"
     depends_on:
       - db
     volumes:
