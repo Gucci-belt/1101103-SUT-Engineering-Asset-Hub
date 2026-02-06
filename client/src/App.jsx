@@ -107,8 +107,8 @@ const App = () => {
     return <div className="flex justify-center items-center h-screen">Loading Clerk...</div>;
   }
 
-  // --- Auth Screen (Clerk) ---
-  if (!isSignedIn) {
+  // --- Auth Screen (Clerk OR Custom Token) ---
+  if (!isSignedIn && !token) {
     return <AuthScreen onLogin={login} />;
   }
 
