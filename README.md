@@ -108,7 +108,11 @@ Project Root/
 > [!TIP]
 > **View the specialized Technical Architecture & Security Analysis video here:**
 >
-> [![Watch the video](https://img.youtube.com/vi/PLACEHOLDER/maxresdefault.jpg)](https://youtu.be/PLACEHOLDER)
+> [![Watch the video]
+
+https://github.com/user-attachments/assets/8d27f658-559d-49b4-8650-b02e6fa0cc36
+
+
 >
 > *(Link to be updated after render)*
 
