@@ -8,6 +8,18 @@ exports.authenticateToken = (req, res, next) => {
 
     if (!token) return res.status(401).json({ error: 'Access token required' });
 
+    // --- TEMPORARY: Allow Mock Token from Clerk Frontend ---
+    if (token.startsWith('mock-clerk-token-')) {
+        const userId = token.replace('mock-clerk-token-', '');
+        req.user = {
+            id: userId, // In real app, we need to map Clerk ID to DB ID here
+            role: 'student',
+            studentId: 'ClerkUser'
+        };
+        return next();
+    }
+    // -------------------------------------------------------
+
     jwt.verify(token, SECRET_KEY, (err, user) => {
         if (err) return res.status(403).json({ error: 'Invalid or expired token' });
         req.user = user;
