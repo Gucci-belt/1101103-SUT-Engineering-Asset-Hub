@@ -24,27 +24,51 @@ exports.cancelRequest = async (req, res) => {
 };
 
 // POST /api/borrow
+// POST /api/transactions/borrow
 exports.createTransaction = async (req, res) => {
-    const { userId, assetId, dueDate, reason } = req.body;
-    // Check if user ID matches authenticated user
-    if (req.user.id !== Number(userId) && req.user.role !== 'admin') {
-        return res.status(403).json({ error: "Unauthorized transaction request" });
-    }
+    let { userId, assetId, dueDate, reason } = req.body;
+    let localUserId = null;
 
     try {
-        // Check if asset is available
+        // --- 1. HANDLE CLERK USER (String ID) ---
+        // If req.user.id is a String (Clerk ID), we must map it to a Local DB User (Int ID)
+        if (typeof req.user.id === 'string' && req.user.id.startsWith('user_')) {
+            // Check if this Clerk User already has a local account
+            const clerkStudentId = `clerk_${req.user.id}`;
+            let localUser = await prisma.user.findUnique({ where: { studentId: clerkStudentId } });
+
+            if (!localUser) {
+                // First time login/borrow? Create a local shadow user
+                localUser = await prisma.user.create({
+                    data: {
+                        studentId: clerkStudentId,
+                        passwordHash: "clerk_auth_managed", // Dummy password
+                        role: "student"
+                    }
+                });
+            }
+            localUserId = localUser.id;
+        }
+        // --- 2. HANDLE LEGACY USER (Int ID) ---
+        else {
+            // For legacy login, req.user.id is already an Int (from JWT)
+            // Security Check: Ensure they are borrowing for themselves
+            if (req.user.id !== Number(userId) && req.user.role !== 'admin') {
+                return res.status(403).json({ error: "Unauthorized transaction request" });
+            }
+            localUserId = Number(userId);
+        }
+
+        // --- 3. VALIDATE ASSET ---
         const asset = await prisma.asset.findUnique({ where: { id: Number(assetId) } });
         if (!asset || asset.status !== 'available') {
             return res.status(400).json({ error: 'Asset not available' });
         }
 
-        // Create transaction (pending) - Asset status remains 'available' until approved by admin for 'pending' flow, 
-        // OR strictly reserved. The current flow in index.js was: status='pending', asset NOT changed (handled in approve).
-        // Let's stick to the current logic: Create Pending, Asset Status remains Available until Approve.
-
+        // --- 4. CREATE TRANSACTION ---
         const transaction = await prisma.transaction.create({
             data: {
-                userId: Number(userId),
+                userId: localUserId, // Use the resolved Integer ID
                 assetId: Number(assetId),
                 dueDate: new Date(dueDate),
                 reason: reason,
@@ -52,7 +76,11 @@ exports.createTransaction = async (req, res) => {
             }
         });
         res.json(transaction);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+
+    } catch (err) {
+        console.error("Borrow Error:", err);
+        res.status(500).json({ error: err.message });
+    }
 };
 
 // GET /api/admin/transactions
