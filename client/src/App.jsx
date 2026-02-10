@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useUser, useClerk, SignIn, UserButton } from "@clerk/clerk-react";
+import { useUser, useClerk, AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
+import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { API_URL } from './config';
 import Navbar from './components/layout/Navbar';
@@ -33,8 +34,7 @@ const App = () => {
   // Sync Clerk -> Local State
   useEffect(() => {
     if (isLoaded && isSignedIn && user && !token) {
-      // Mock Login: In a real app, you'd send the Clerk token to backend to get a JWT
-      // Here we just mock the session so the UI works
+      // Mock Login for now (In real app, exchange this for backend JWT)
       login({
         token: "mock-clerk-token-" + user.id,
         role: "student", // Default role
@@ -57,7 +57,7 @@ const App = () => {
   };
 
   const logout = () => {
-    signOut(); // Sign out from Clerk
+    signOut();
     setToken(null);
     setUserRole(null);
     setStudentId('');
@@ -65,15 +65,12 @@ const App = () => {
     localStorage.clear();
   };
 
+  // ... (Fetch functions remain the same) ...
   const fetchAssets = async () => {
     try {
       const res = await fetch(`${API_URL}/assets`);
       const data = await res.json();
-
-      if (!Array.isArray(data)) {
-        console.error("Invalid assets data:", data);
-        return;
-      }
+      if (!Array.isArray(data)) return;
 
       const mapped = data.map(a => ({
         ...a,
@@ -88,39 +85,38 @@ const App = () => {
   const fetchRequests = async () => {
     try {
       const res = await fetch(`${API_URL}/admin/transactions`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
-
-      if (Array.isArray(data)) {
-        setRequests(data);
-      } else {
-        console.error("Invalid requests data:", data);
-      }
+      if (Array.isArray(data)) setRequests(data);
     } catch (err) { console.error("Error fetching requests:", err); }
   };
 
-  // --- Loading State (Removed for better UX - app handles undefined states) ---
-  // if (!isLoaded) return null; // or show nothing
-
-  // --- Auth Screen (Clerk OR Custom Token) ---
-  if (!isSignedIn && !token) {
-    return <AuthScreen onLogin={login} />;
-  }
-
-  // --- Main App ---
+  // --- Main Render Logic ---
   return (
     <div className="min-h-screen bg-slate-50 font-['Prompt',_sans-serif] text-slate-800 pb-20">
       <Toaster position="top-center" reverseOrder={false} />
-      <Navbar viewMode={viewMode} setViewMode={setViewMode} user={{ role: userRole, studentId }} onLogout={logout} />
 
-      {viewMode === 'student' ? (
-        <StudentDashboard assets={assets} refreshAssets={fetchAssets} studentId={studentId} userId={userId} />
-      ) : (
-        <AdminDashboard assets={assets} requests={requests} refreshData={() => { fetchAssets(); fetchRequests(); }} />
-      )}
+      <Routes>
+        {/* Route 1: SSO Callback Handler */}
+        <Route path="/sso-callback" element={<AuthenticateWithRedirectCallback />} />
+
+        {/* Route 2: Main App (Protected) */}
+        <Route path="/" element={
+          (!isSignedIn && !token) ? (
+            <AuthScreen onLogin={login} />
+          ) : (
+            <>
+              <Navbar viewMode={viewMode} setViewMode={setViewMode} user={{ role: userRole, studentId }} onLogout={logout} />
+              {viewMode === 'student' ? (
+                <StudentDashboard assets={assets} refreshAssets={fetchAssets} studentId={studentId} userId={userId} />
+              ) : (
+                <AdminDashboard assets={assets} requests={requests} refreshData={() => { fetchAssets(); fetchRequests(); }} />
+              )}
+            </>
+          )
+        } />
+      </Routes>
     </div>
   );
 };
