@@ -174,12 +174,24 @@ exports.returnTransaction = async (req, res) => {
 
 // GET /api/transactions/my-history
 exports.getMyHistory = async (req, res) => {
-    // FIX IDOR: Use ID from Token (req.user.id) instead of Query Param
-    const userId = req.user.id;
+    let userId = req.user.id;
+    let localUserId = Number(userId);
 
     try {
+        // --- HANDLE CLERK USER (String ID) ---
+        if (typeof userId === 'string' && userId.startsWith('user_')) {
+            const clerkStudentId = `clerk_${userId}`;
+            const localUser = await prisma.user.findUnique({ where: { studentId: clerkStudentId } });
+
+            if (!localUser) {
+                // If user doesn't exist in DB yet, they have no history
+                return res.json([]);
+            }
+            localUserId = localUser.id;
+        }
+
         const transactions = await prisma.transaction.findMany({
-            where: { userId: Number(userId) },
+            where: { userId: localUserId },
             include: { asset: true },
             orderBy: [
                 { status: 'asc' },
