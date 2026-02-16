@@ -13,6 +13,9 @@ pipeline {
 
     stages {
         stage('Deploy') {
+            when {
+                branch 'main'
+            }
             steps {
                 script {
                     // We use 'sh' to run commands on the server directly

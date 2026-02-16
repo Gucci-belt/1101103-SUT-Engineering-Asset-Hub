@@ -17,6 +17,7 @@ const Navbar = ({ viewMode, setViewMode, user, onLogout }) => (
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
+                    {/* FEATURE TOGGLE: Hide Admin for Demo
                     {user.role === 'admin' && (
                         <button
                             onClick={() => setViewMode(viewMode === 'student' ? 'admin' : 'student')}
@@ -25,6 +26,7 @@ const Navbar = ({ viewMode, setViewMode, user, onLogout }) => (
                             Switch to {viewMode === 'student' ? 'Admin' : 'Student'}
                         </button>
                     )}
+                    */}
 
                     <div className="flex flex-col items-end mr-2">
                         <span className="text-sm font-semibold text-slate-700 hidden sm:inline">{user.role === 'admin' ? 'Admin User' : 'Student User'}</span>
