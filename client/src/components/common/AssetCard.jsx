@@ -16,12 +16,13 @@ const AssetCard = ({ asset, onBorrow, onClick }) => {
             <div className="p-6 relative">
                 <div className="absolute -top-6 right-6">
                     <button onClick={(e) => { e.stopPropagation(); onBorrow(); }} disabled={!isAvailable}
-                        className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 ${isAvailable ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-300'}`}>
+                        aria-label={`Borrow ${asset.name}`}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 ${isAvailable ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
                         <Package size={20} />
                     </button>
                 </div>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest border border-slate-100 px-2 py-1 rounded-md">{asset.category}</span>
-                <h3 className="text-lg font-bold text-slate-800 mt-2 mb-1 truncate">{asset.name}</h3>
+                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest border border-slate-200 px-2 py-1 rounded-md">{asset.category}</span>
+                <h2 className="text-lg font-bold text-slate-800 mt-2 mb-1 truncate">{asset.name}</h2>
                 <p className="text-slate-500 text-xs font-mono">{asset.serialNumber}</p>
             </div>
         </div>
